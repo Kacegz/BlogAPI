@@ -16,12 +16,7 @@ router.delete("/posts/:postid", postController.delete);
 router.get("/posts/:postid/comments", commentController.list);
 router.post("/posts/:postid/comments", commentController.create);
 router.delete("/posts/:postid/comments/:commentid", commentController.delete);
-/*
-router.get("/posts", commentController.list);
-router.get("/posts/:id", commentController.detail);
-router.post("/posts", commentController.create);
-router.delete("/posts/:id", commentController.delete);
-*/
+
 router.post("/register", userController.register);
 router.post("/log_in", userController.log_in);
 
