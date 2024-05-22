@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const commentSchema = new Schema({
-  Text: { type: String, required: true },
-  Author: { type: Schema.Types.ObjectId, ref: "Author", required: true },
+  text: { type: String, required: true },
+  author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  post: { type: Schema.Types.ObjectId, ref: "Post", required: true },
 });
 
-exports.Comment = mongoose.model("Comment", commentSchema);
+module.exports = mongoose.model("Comment", commentSchema);
