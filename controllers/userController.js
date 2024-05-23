@@ -40,7 +40,7 @@ exports.register = [
   body("confirm", "passwords must match").custom((value, { req }) => {
     return value === req.body.password;
   }),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.json({ error: result.array()[0].msg });
