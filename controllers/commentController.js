@@ -1,5 +1,4 @@
 const Comment = require("../models/Comment");
-const Post = require("../models/Post");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 
@@ -10,7 +9,7 @@ exports.list = asyncHandler(async (req, res) => {
 exports.create = asyncHandler(async (req, res) => {
   const comment = new Comment({
     text: req.body.text,
-    author: new mongoose.Types.ObjectId(),
+    author: new mongoose.Types.ObjectId(), //to change
     post: req.params.postid,
   });
   comment.save();
