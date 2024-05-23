@@ -30,18 +30,20 @@ exports.create = [
     if (!result.isEmpty()) {
       return res.json({ error: result.array()[0].msg });
     }
-    jwt.verify(req.token, process.env.secretkey, (err, authData) => {
+    jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
       if (err) {
         res.sendStatus(403);
       } else {
-        console.log(authData);
+        const exists = await Post.findOne({ title: req.body.title });
+        if (exists !== null)
+          return res.status(400).json({ error: "Post already exist" });
         const post = new Post({
           title: req.body.title,
           text: req.body.text,
-          author: new mongoose.Types.ObjectId(), //tochange
+          author: authData.user._id,
           published: false,
         });
-        //await post.save();
+        await post.save();
         res.json(post);
       }
     });
@@ -49,10 +51,8 @@ exports.create = [
 ];
 exports.delete = asyncHandler(async (req, res) => {
   const post = await Post.findById(req.params.postid);
-  console.log(post);
-  if (post === null) {
+  if (post === null)
     return res.status(400).json({ error: "Post doesn't exist" });
-  }
   await Post.findByIdAndDelete(req.params.postid);
   await Comment.deleteMany({ post: req.params.postid });
   res.json("Post deleted");
