@@ -59,7 +59,7 @@ exports.register = [
         admin: false,
       });
       user.save();
-      res.json(user);
+      res.json({ message: "Succesfully registered!" });
     });
   }),
 ];

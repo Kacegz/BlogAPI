@@ -16,13 +16,13 @@ function verifyToken(req, res, next) {
   }
 }
 
-/* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 router.get("/posts", postController.list);
 router.get("/posts/:postid", postController.detail);
 router.post("/posts", verifyToken, postController.create);
+router.put("/posts/:postid", verifyToken, postController.update);
 router.delete("/posts/:postid", verifyToken, postController.delete);
 
 router.get("/posts/:postid/comments", commentController.list);
