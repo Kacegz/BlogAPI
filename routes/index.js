@@ -15,7 +15,6 @@ function verifyToken(req, res, next) {
     res.sendStatus(403);
   }
 }
-
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });

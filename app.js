@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 require("dotenv").config();
 const mongoose = require("mongoose");
-
+const cors = require("cors");
 const mongodb = process.env.db;
 
 main().catch((err) => console.log(err));
@@ -26,6 +26,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+const allowList = process.env.allowList;
+const corsOptionsFunc = function (req, callback) {
+  if (allowList.includes(req.header("Origin"))) {
+    //check
+    corsOptions = { origin: true };
+  } else {
+    corsOptions = { origin: false };
+  }
+  callback(null, corsOptions);
+};
+
+app.use(cors(corsOptionsFunc));
 
 app.use("/", indexRouter);
 
