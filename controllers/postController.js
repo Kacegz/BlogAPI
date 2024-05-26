@@ -60,6 +60,7 @@ exports.update = [
   body("text", "text must be longer than 5 characters")
     .isLength({ min: 5 })
     .escape(),
+  body("published", "Published is required").notEmpty(),
   asyncHandler(async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty())

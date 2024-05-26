@@ -1,21 +1,64 @@
 const Comment = require("../models/Comment");
 const asyncHandler = require("express-async-handler");
-const mongoose = require("mongoose");
+const { body, validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 exports.list = asyncHandler(async (req, res) => {
   const comments = await Comment.find({ post: req.params.postid }).exec();
+  if (comments == null) {
+    return res.status(400).json({ error: "No comments found" });
+  }
   res.json(comments);
 });
-exports.create = asyncHandler(async (req, res) => {
-  const comment = new Comment({
-    text: req.body.text,
-    author: new mongoose.Types.ObjectId(), //to change
-    post: req.params.postid,
-  });
-  comment.save();
-  res.json(comment);
-});
+exports.create = [
+  body("text")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Text cannot be empty")
+    .escape(),
+  asyncHandler(async (req, res) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.json({
+        error: "Validation failed",
+        message: result.array()[0].msg,
+      });
+    }
+    jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
+      if (err) return res.status(403).json({ error: "You must be logged in" });
+      const post = Comment.find({
+        post: req.params.postid,
+        _id: req.params.commentid,
+      });
+      if (post == null) {
+        return res.status(400).json({ error: "Post doesn't exist" });
+      }
+      const comment = new Comment({
+        text: req.body.text,
+        author: authData.user._id,
+        post: req.params.postid,
+      });
+      comment.save();
+      res.json(comment);
+    });
+  }),
+];
 exports.delete = asyncHandler(async (req, res) => {
-  const comment = await Comment.findByIdAndDelete(req.params.commentid);
-  res.json("Comment deleted");
+  const comment = await Comment.findById(req.params.commentid);
+  if (comment == null)
+    return res.status(400).json({ error: "Comment doesn't exist" });
+  if (comment.post.toString() !== req.params.postid) {
+    return res.status(400).json({ error: "Comment doesn't exist" });
+  }
+  jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
+    if (err) {
+      return res.status(403).json({ error: "You must be logged in" });
+    }
+    if (comment.author._id.toString() !== authData.user._id)
+      return res.status(403).json({ error: "You're not an author" });
+    const deleted = await Comment.findByIdAndDelete(req.params.commentid);
+    console.log(deleted);
+    res.json({ message: "Comment deleted" });
+  });
 });

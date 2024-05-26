@@ -12,7 +12,7 @@ function verifyToken(req, res, next) {
     req.token = bearerToken;
     next();
   } else {
-    req.sendStatus(403);
+    res.sendStatus(403);
   }
 }
 
