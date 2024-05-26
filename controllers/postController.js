@@ -88,7 +88,7 @@ exports.update = [
           new: true,
         }
       );
-      res.json({ message: "Succesfully updated!", updated });
+      res.json({ message: "Post succesfully updated!", updated });
     });
   }),
 ];
