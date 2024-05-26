@@ -18,6 +18,7 @@ exports.detail = asyncHandler(async (req, res) => {
   if (post === null) {
     return res.status(400).json({ error: "Post doesn't exist" });
   }
+  console.log(post.formattedDate);
   res.json(post);
 });
 
