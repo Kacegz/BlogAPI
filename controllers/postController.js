@@ -104,6 +104,6 @@ exports.delete = asyncHandler(async (req, res) => {
       return res.status(403).json({ error: "You're not an author" });
     await Post.findByIdAndDelete(req.params.postid);
     await Comment.deleteMany({ post: req.params.postid });
-    res.json("Post deleted");
+    res.json({ message: "Successfully deleted!" });
   });
 });
