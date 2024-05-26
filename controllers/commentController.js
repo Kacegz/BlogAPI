@@ -44,13 +44,45 @@ exports.create = [
     });
   }),
 ];
+exports.update = [
+  body("text")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Text cannot be empty")
+    .escape(),
+  asyncHandler(async (req, res) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.json({
+        error: "Validation failed",
+        message: result.array()[0].msg,
+      });
+    }
+    const comment = await Comment.findById(req.params.commentid);
+    if (comment == null || comment.post.toString() !== req.params.postid)
+      return res.status(400).json({ error: "Comment doesn't exist" });
+    jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
+      if (err) {
+        return res.status(403).json({ error: "You must be logged in" });
+      }
+      if (comment.author._id.toString() !== authData.user._id)
+        return res.status(403).json({ error: "You're not an author" });
+      const editedComment = {
+        text: req.body.text,
+      };
+      const updated = await Comment.findOneAndUpdate(
+        { _id: req.params.commentid },
+        editedComment,
+        { new: true }
+      );
+      res.json({ message: "Comment succesfully updated!", updated });
+    });
+  }),
+];
 exports.delete = asyncHandler(async (req, res) => {
   const comment = await Comment.findById(req.params.commentid);
-  if (comment == null)
+  if (comment == null || comment.post.toString() !== req.params.postid)
     return res.status(400).json({ error: "Comment doesn't exist" });
-  if (comment.post.toString() !== req.params.postid) {
-    return res.status(400).json({ error: "Comment doesn't exist" });
-  }
   jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
     if (err) {
       return res.status(403).json({ error: "You must be logged in" });
@@ -58,7 +90,6 @@ exports.delete = asyncHandler(async (req, res) => {
     if (comment.author._id.toString() !== authData.user._id)
       return res.status(403).json({ error: "You're not an author" });
     const deleted = await Comment.findByIdAndDelete(req.params.commentid);
-    console.log(deleted);
     res.json({ message: "Comment deleted" });
   });
 });
