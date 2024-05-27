@@ -5,7 +5,9 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 exports.list = asyncHandler(async (req, res) => {
-  const comments = await Comment.find({ post: req.params.postid }).exec();
+  const comments = await Comment.find({ post: req.params.postid })
+    .populate("author")
+    .exec();
   if (comments == null) {
     return res.status(400).json({ error: "No comments found" });
   }

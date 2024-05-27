@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 exports.list = asyncHandler(async (req, res) => {
-  const posts = await Post.find({}).exec();
+  const posts = await Post.find({}).populate("author").exec();
   if (posts === null) {
     return res.status(400).json({ error: "No posts found" });
   }
@@ -14,11 +14,10 @@ exports.list = asyncHandler(async (req, res) => {
 });
 
 exports.detail = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.postid).exec();
+  const post = await Post.findById(req.params.postid).populate("author").exec();
   if (post === null) {
     return res.status(400).json({ error: "Post doesn't exist" });
   }
-  console.log(post.formattedDate);
   res.json(post);
 });
 
@@ -36,7 +35,6 @@ exports.create = [
       });
     }
     jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
-      console.log(authData.user);
       if (err) {
         return res.status(403).json({ error: "You must be logged in" });
       } else {
