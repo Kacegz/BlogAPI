@@ -15,7 +15,7 @@ exports.login = [
   asyncHandler(async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      return res.json({ error: result.array()[0].msg });
+      return res.status(400).json({ error: result.array()[0].msg });
     }
     const user = await User.findOne({ username: req.body.username }).exec();
     if (user !== null) {
@@ -32,6 +32,8 @@ exports.login = [
           }
         );
       }
+    } else {
+      return res.status(403).json({ error: "User doesn't exist" });
     }
   }),
 ];
@@ -42,13 +44,13 @@ exports.register = [
   body("password", "password should be longer than 3 characters")
     .isLength({ min: 3 })
     .escape(),
-  body("confirm", "passwords must match").custom((value, { req }) => {
+  body("confirm", "password must match").custom((value, { req }) => {
     return value === req.body.password;
   }),
   asyncHandler(async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      return res.json({ error: result.array()[0].msg });
+      return res.status(400).json({ error: result.array()[0].msg });
     }
     const exists = await User.find({ username: req.body.username });
     if (exists.length > 0) {
