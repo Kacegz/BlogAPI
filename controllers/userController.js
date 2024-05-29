@@ -23,9 +23,14 @@ exports.login = [
       if (!match) {
         return res.status(403).json({ error: "Wrong password" });
       } else {
-        jwt.sign({ user }, process.env.secretkey, (err, token) => {
-          res.json({ token });
-        });
+        jwt.sign(
+          { user },
+          process.env.secretkey,
+          { expiresIn: "1d" },
+          (err, token) => {
+            res.json({ token });
+          }
+        );
       }
     }
   }),
