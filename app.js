@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const allowList = process.env.allowList;
 const corsOptionsFunc = function (req, callback) {
-  if (allowList.includes(req.header("Origin"))) {
+  if (allowList.indexOf(req.header("Origin")) !== -1) {
     //check
     corsOptions = { origin: true };
   } else {
@@ -39,6 +39,8 @@ const corsOptionsFunc = function (req, callback) {
 };
 
 app.use(cors(corsOptionsFunc));
+
+//app.use(cors());
 
 app.use("/", indexRouter);
 
