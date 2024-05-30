@@ -67,17 +67,19 @@ exports.update = [
       if (err) {
         return res.status(403).json({ error: "You must be logged in" });
       }
-      if (comment.author._id.toString() !== authData.user._id)
-        return res.status(403).json({ error: "You're not an author" });
-      const editedComment = {
-        text: req.body.text,
-      };
-      const updated = await Comment.findOneAndUpdate(
-        { _id: req.params.commentid },
-        editedComment,
-        { new: true }
-      );
-      res.json({ message: "Comment succesfully updated!", updated });
+      if (!authData.user.admin) {
+        return res.status(403).json({ error: "You're not an admin" });
+      } else {
+        const editedComment = {
+          text: req.body.text,
+        };
+        const updated = await Comment.findOneAndUpdate(
+          { _id: req.params.commentid },
+          editedComment,
+          { new: true }
+        );
+        res.json({ message: "Comment succesfully updated!", updated });
+      }
     });
   }),
 ];
@@ -89,9 +91,11 @@ exports.delete = asyncHandler(async (req, res) => {
     if (err) {
       return res.status(403).json({ error: "You must be logged in" });
     }
-    if (comment.author._id.toString() !== authData.user._id)
-      return res.status(403).json({ error: "You're not an author" });
-    const deleted = await Comment.findByIdAndDelete(req.params.commentid);
-    res.json({ message: "Comment deleted" });
+    if (!authData.user.admin) {
+      return res.status(403).json({ error: "You're not an admin" });
+    } else {
+      const deleted = await Comment.findByIdAndDelete(req.params.commentid);
+      res.json({ message: "Comment deleted" });
+    }
   });
 });
