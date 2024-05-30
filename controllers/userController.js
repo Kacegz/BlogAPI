@@ -28,7 +28,7 @@ exports.login = [
           process.env.secretkey,
           { expiresIn: "1d" },
           (err, token) => {
-            res.json({ token });
+            res.json({ token, isAdmin: user.admin });
           }
         );
       }
@@ -37,6 +37,7 @@ exports.login = [
     }
   }),
 ];
+
 exports.register = [
   body("username", "username should be longer than 3 characters")
     .isLength({ min: 3 })
