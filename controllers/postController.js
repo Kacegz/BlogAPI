@@ -26,6 +26,7 @@ exports.create = [
   body("text", "text must be longer than 5 characters")
     .isLength({ min: 5 })
     .escape(),
+  body("published", "Published is required").notEmpty(),
   asyncHandler(async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -66,28 +67,31 @@ exports.update = [
       return res
         .status(400)
         .json({ error: "Validation failed", message: result.array()[0].msg });
-    if (post === null)
-      return res.status(400).json({ error: "Post doesn't exist" });
+
     jwt.verify(req.token, process.env.secretkey, async (err, authData) => {
       if (err) {
         return res.status(403).json({ error: "You must be logged in" });
       }
       const post = await Post.findById(req.params.postid);
-      if (post.author._id.toString() !== authData.user._id)
-        return res.status(403).json({ error: "You're not an author" });
-      const editedPost = {
-        title: req.body.title,
-        text: req.body.text,
-        published: req.body.published,
-      };
-      const updated = await Post.findOneAndUpdate(
-        { _id: req.params.postid },
-        editedPost,
-        {
-          new: true,
-        }
-      );
-      res.json({ message: "Post succesfully updated!", updated });
+      if (post === null)
+        return res.status(400).json({ error: "Post doesn't exist" });
+      if (!authData.user.admin) {
+        return res.status(403).json({ error: "You're not an admin" });
+      } else {
+        const editedPost = {
+          title: req.body.title,
+          text: req.body.text,
+          published: req.body.published,
+        };
+        const updated = await Post.findOneAndUpdate(
+          { _id: req.params.postid },
+          editedPost,
+          {
+            new: true,
+          }
+        );
+        res.json({ message: "Post succesfully updated!", updated });
+      }
     });
   }),
 ];
@@ -100,10 +104,12 @@ exports.delete = asyncHandler(async (req, res) => {
     if (err) {
       return res.status(403).json({ error: "You must be logged in" });
     }
-    if (post.author._id.toString() !== authData.user._id)
-      return res.status(403).json({ error: "You're not an author" });
-    await Post.findByIdAndDelete(req.params.postid);
-    await Comment.deleteMany({ post: req.params.postid });
-    res.json({ message: "Successfully deleted!" });
+    if (!authData.user.admin) {
+      return res.status(403).json({ error: "You're not an admin" });
+    } else {
+      await Post.findByIdAndDelete(req.params.postid);
+      await Comment.deleteMany({ post: req.params.postid });
+      res.json({ message: "Successfully deleted!" });
+    }
   });
 });
