@@ -28,11 +28,13 @@ router.get("/posts/:postid/comments", commentController.list);
 router.post("/posts/:postid/comments", verifyToken, commentController.create);
 router.put(
   "/posts/:postid/comments/:commentid",
+
   verifyToken,
   commentController.update
 );
 router.delete(
   "/posts/:postid/comments/:commentid",
+
   verifyToken,
   commentController.delete
 );
