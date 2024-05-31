@@ -39,7 +39,7 @@ const corsOptionsFunc = function (req, callback) {
 };
 app.use(cors(corsOptionsFunc));
 
-//app.use(cors());
+app.use(cors());
 
 app.use("/", indexRouter);
 
