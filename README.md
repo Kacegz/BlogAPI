@@ -7,8 +7,10 @@ This is a blog REST API that allows all CRUD operations on posts and comments an
 - CMS page
 ## 🔗 Links
 - [API source code](https://github.com/Kacegz/BlogAPI)
-- [Client source code]()
-- [CMS source code]()
+- [Client Live](https://kacegz-blogclient.vercel.app/)
+- [Client source code](https://github.com/Kacegz/Blog-Client)
+- [CMS Live](https://kacegz-blogcms.vercel.app/)
+- [CMS source code](https://github.com/Kacegz/BlogCMS)
 ## ✨ Features
 - CRUD operations for posts and comments
 - User creation with authentication, authorization and encryption using bcryptjs
@@ -37,3 +39,53 @@ allowList="Array of allowed cors headers"
 npm run start
 ```
 __The server will start on ```localhost:3000```__
+## 🗺️Endpoints
+### Users
+- ```POST /register``` 
+- - Create user
+- - Request:
+```json
+{
+    "username":"username",
+    "password": "password",
+    "confirm": "password to confirm"
+}
+```
+- ```POST /login``` 
+- - Log in user
+- - Request:
+```json
+{
+    "username":"username",
+    "password": "password",
+}
+```
+
+### Posts
+- ```GET /posts``` 
+- - Get all posts
+
+- ```GET /posts/:postid``` 
+- - Get a certain post
+
+- ```POST /posts``` 
+- - Create a post
+
+- ```PUT /posts/:postid``` 
+- - Update a post
+
+- ```DELETE /posts/:postid``` 
+- - Delete post
+
+### Comments
+- ```GET /posts/:postid/comments``` 
+- - Get all posts
+
+- ```POST /posts/:postid/comments``` 
+- - Create a post
+
+- ```PUT /posts/:postid/comments/:commentid``` 
+- - Update a post
+
+- ```DELETE /posts/:postid/comments/:commentid``` 
+- - Delete a comment
