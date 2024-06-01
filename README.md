@@ -60,32 +60,77 @@ __The server will start on ```localhost:3000```__
     "password": "password",
 }
 ```
-
+- - Response: 
+```json
+{
+    "token": "Authorization token",
+    "isAdmin": "Boolean value whether user is an admin"
+}
+```
 ### Posts
 - ```GET /posts``` 
 - - Get all posts
-
+- - Response: 
+```json
+{
+    "Posts": "Array containing all posts",
+}
+```
 - ```GET /posts/:postid``` 
 - - Get a certain post
-
+- - Response: 
+```json
+{
+    "Post": "Post details object",
+}
+```
 - ```POST /posts``` 
 - - Create a post
-
+- - Request: 
+```json
+{
+    "title": "Title of an article",
+    "text": "Main text of an article",
+    "published":"Boolean value for publishing posts"
+}
+```
 - ```PUT /posts/:postid``` 
 - - Update a post
-
+- - Request: 
+```json
+{
+    "title": "Updated title of an article",
+    "text": "Updated main text of an article",
+    "published":"Updated boolean value for publishing posts"
+}
+```
 - ```DELETE /posts/:postid``` 
 - - Delete post
 
 ### Comments
 - ```GET /posts/:postid/comments``` 
-- - Get all posts
-
+- - Get all comments
+- - Response: 
+```json
+{
+    "Posts": "Array containing all comments in a certain post",
+}
+```
 - ```POST /posts/:postid/comments``` 
 - - Create a post
-
+- - Request: 
+```json
+{
+    "Text": "Comment message",
+}
+```
 - ```PUT /posts/:postid/comments/:commentid``` 
 - - Update a post
-
+- - Request: 
+```json
+{
+    "Text": "Updated comment message",
+}
+```
 - ```DELETE /posts/:postid/comments/:commentid``` 
 - - Delete a comment
